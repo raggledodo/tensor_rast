@@ -1,0 +1,111 @@
+mindepth: 2
+maxdepth: 9
+leaves:
+- output: scalar_d
+  names: scalar_double
+- output: scalar_i
+  names: scalar_int
+- output: tensor
+  names: variable
+- output: pneg_tensor # potentially negative
+  names: variable
+groups:
+- group: ELEMENTARY 
+  attr: 
+    shape: ELEM
+  subgroups:
+  - group: UNARY_POS
+    outputs:
+      tensor: tensor
+      pneg_tensor: pneg_tensor
+    names:
+    - ABS
+    - EXP
+  - group: UNARY_NEG
+    outputs:
+      pneg_tensor: tensor
+      pneg_tensor: pneg_tensor
+    names:
+    - NEG
+    - SIN
+    - COS
+    - TAN
+  - group: UNARY_NONEG
+    outputs:
+      tensor: tensor
+    names:
+    - LOG
+    - SQRT
+  - group: BINARY_POW
+    outputs:
+      tensor:
+      - tensor, scalar_d
+      - tensor, tensor
+      - tensor, pneg_tensor
+      - scalar_d, tensor
+      - scalar_d, pneg_tensor
+      pneg_tensor:
+      - pneg_tensor, scalar_d
+      - pneg_tensor, pneg_tensor
+      - pneg_tensor, tensor
+    names:
+    - POW
+  - group: BINARY_POS
+    outputs:
+      tensor:
+      - scalar_d, tensor
+      - tensor, scalar_d
+      - tensor, tensor
+      pneg_tensor:
+      - scalar_d, pneg_tensor
+      - tensor, pneg_tensor
+      - pneg_tensor, scalar_d
+      - pneg_tensor, pneg_tensor
+      - pneg_tensor, tensor
+    names:
+    - ADD
+    - MUL
+    - DIV
+  - group: BINARY_NEG
+    outputs:
+      pneg_tensor: 
+      - tensor, scalar_d
+      - scalar_d, tensor
+      - tensor, tensor
+      - pneg_tensor, scalar_d
+      - scalar_d, pneg_tensor
+      - pneg_tensor, pneg_tensor
+      - tensor, pneg_tensor
+      - pneg_tensor, tensor
+    names:
+    - SUB
+- group: REDUCE
+  attr:
+    limit: 1
+    shape: REDUCE
+  outputs:
+    tensor: tensor, scalar_i
+    pneg_tensor: pneg_tensor, scalar_i
+  names:
+  - RMAX
+  - RSUM
+- group: FULLREDUCE
+  attr: 
+    shape: REDUCE
+  outputs:
+    scalar_d:
+    - tensor
+    - pneg_tensor
+  names:
+  - RMAX
+  - RSUM
+- group: MATMUL
+  attr:
+    shape: MATMUL
+  outputs:
+    tensor: tensor, tensor
+  pneg_tensor:
+  - pneg_tensor, pneg_tensor
+  - tensor, pneg_tensor
+  - pneg_tensor, tensor
+  names: MATMUL
